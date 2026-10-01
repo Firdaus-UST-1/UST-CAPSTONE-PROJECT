@@ -89,3 +89,7 @@ churn_by_payment = pd.crosstab(
 ) * 100
 print(churn_by_payment)
 print(f"------------------------------------------------------")
+
+
+#Save the cleaned dataset to a new CSV file
+df.to_csv(r"C:\Users\USER\Downloads\UST Capstone\data\processed\Telco-Customer-Churn-cleaned.csv", index=False)
