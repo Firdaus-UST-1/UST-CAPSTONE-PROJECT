@@ -32,14 +32,8 @@ print(f"------------------------------------------------------")
 print(df["TotalCharges"].dtype)
 
 #Remove the customerID from the feature matrix
-df = df.drop(columns=["customerID"])
-
-#Check whether customerID has been removed
-print(f"------------------------------------------------------")
-print(f"Check whether customerID has been removed")
-print(f"------------------------------------------------------")
-print(df.head())
-print(f"------------------------------------------------------")
+# df = df.drop(columns=["customerID"])
+customer_id = df["customerID"]
 
 #Convert Churn to a binary target variable
 df["Churn"] = df["Churn"].map({"Yes": 1, "No": 0})
