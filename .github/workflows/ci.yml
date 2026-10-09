@@ -4,7 +4,8 @@ on:
   pull_request:
 jobs:
   test:
-    runs-on: ubuntu-latest
+    # Changed from ubuntu-latest to windows-latest
+    runs-on: windows-latest 
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
