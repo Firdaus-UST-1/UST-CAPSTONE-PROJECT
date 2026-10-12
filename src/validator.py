@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 
 
@@ -26,8 +28,19 @@ REQUIRED_COLUMNS = [
 ]
 
 
-def validate_data(df: pd.DataFrame) -> None:
+def validate_data(data: pd.DataFrame | str | Path | None = None) -> None:
     # Check the CSV data and raise an error if it contains invalid values.
+    if isinstance(data, pd.DataFrame):
+        df = data
+    else:
+        data_path = data or (
+            Path(__file__).resolve().parents[1]
+            / "data"
+            / "processed"
+            / "Telco-Customer-Churn-cleaned.csv"
+        )
+        df = pd.read_csv(data_path)
+
     missing_columns = []
     for column in REQUIRED_COLUMNS:
         if column not in df.columns:

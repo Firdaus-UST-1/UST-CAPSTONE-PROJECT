@@ -12,7 +12,7 @@ def preprocess_data(data: pd.DataFrame, output_path: str | Path) -> pd.DataFrame
 
     print(f"Missing TotalCharges rows = {int(missing_charges.sum())}")
     if missing_charges.any():
-        print(processed_data.loc[missing_charges, ["customerID", "tenure", "TotalCharges"]])
+        print(processed_data.loc[missing_charges, ["customerID","TotalCharges"]])
 
     processed_data["TotalCharges"] = total_charges
 
