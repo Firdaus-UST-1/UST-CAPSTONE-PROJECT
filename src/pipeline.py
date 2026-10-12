@@ -35,11 +35,11 @@ def run_pipeline(input_path: str | Path | None = None):
 		data = load_data(input_path)
 		rows_loaded = len(data)
 
-		validate_data(data)
-		validation_status = "Complete"
-
 		processed_data = preprocess_data(data, processed_path)
 		cleaning_status = "Complete"
+
+		validate_data(processed_path)
+		validation_status = "Complete"
 
 		features = processed_data.drop(columns=["Churn", "customerID", "TotalCharges"])
 		target = processed_data["Churn"].astype(int)

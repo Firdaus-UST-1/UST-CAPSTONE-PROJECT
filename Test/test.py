@@ -3,56 +3,57 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
+from src.preprocessing import preprocess_data
+from src.validator import validate_data
 
-DATA_PATH = Path(__file__).resolve().parents[1] / "data" / "raw" / "Telco-Customer-Churn.csv"
+
+PROJECT_FOLDER = Path(__file__).parent.parent
+DATA_PATH = PROJECT_FOLDER / "data" / "raw" / "Telco-Customer-Churn.csv"
 
 
-@pytest.fixture(scope="module")
-def churn_data():
+def load_raw_data():
     return pd.read_csv(DATA_PATH)
 
 
-def test_overall_churn_percentage(churn_data):
-    percentages = churn_data["Churn"].value_counts(normalize=True).mul(100)
+def test_required_columns_are_validated():
+    churn_data = load_raw_data()
+    data_without_column = churn_data.drop(columns=["gender"])
 
-    assert percentages.to_dict() == pytest.approx({"No": 73.46, "Yes": 26.54}, abs=0.01)
-
-
-def test_churn_percentage_by_contract(churn_data):
-    percentages = pd.crosstab(
-        churn_data["Contract"], churn_data["Churn"], normalize="index"
-    ).mul(100)
-
-    assert percentages["Yes"].to_dict() == pytest.approx(
-        {"Month-to-month": 42.71, "One year": 11.27, "Two year": 2.83},
-        abs=0.01,
-    )
+    # Check that validation reports the missing column.
+    with pytest.raises(ValueError, match="Missing required columns: gender"):
+        validate_data(data_without_column)
 
 
-def test_churn_percentage_by_internet_service(churn_data):
-    percentages = pd.crosstab(
-        churn_data["InternetService"], churn_data["Churn"], normalize="index"
-    ).mul(100)
+def test_churn_contains_expected_values_before_encoding():
+    churn_data = load_raw_data()
 
-    assert percentages["Yes"].to_dict() == pytest.approx(
-        {"DSL": 18.96, "Fiber optic": 41.89, "No": 7.40},
-        abs=0.01,
-    )
+    assert churn_data["Churn"].isin(["Yes", "No"]).all()
 
 
-def test_churn_percentage_by_tenure_range(churn_data):
-    tenure_ranges = pd.cut(
-        churn_data["tenure"],
-        bins=[0, 12, 24, 48, 72],
-        labels=["0-12", "13-24", "25-48", "49-72"],
-        include_lowest=True,
-    )
-    percentages = pd.crosstab(
-        tenure_ranges, churn_data["Churn"], normalize="index"
-    ).mul(100)
+def test_duplicate_customer_ids_are_detected():
+    churn_data = load_raw_data()
+    data_with_duplicate = churn_data.copy()
+    first_customer_id = data_with_duplicate.loc[0, "customerID"]
+    data_with_duplicate.loc[1, "customerID"] = first_customer_id
 
-    assert tenure_ranges.notna().all()
-    assert percentages["Yes"].to_dict() == pytest.approx(
-        {"0-12": 47.44, "13-24": 28.71, "25-48": 20.39, "49-72": 9.51},
-        abs=0.01,
-    )
+    # Check that validation reports the duplicate ID.
+    with pytest.raises(ValueError, match="customerID contains duplicate values"):
+        validate_data(data_with_duplicate)
+
+
+def test_total_charges_are_numeric_after_cleaning(tmp_path):
+    churn_data = load_raw_data()
+    # pytest creates tmp_path as a temporary folder for this test.
+    cleaned_file = tmp_path / "cleaned.csv"
+    cleaned_data = preprocess_data(churn_data, cleaned_file)
+
+    assert pd.api.types.is_numeric_dtype(cleaned_data["TotalCharges"])
+
+
+def test_cleaned_data_has_no_negative_charges(tmp_path):
+    churn_data = load_raw_data()
+    cleaned_file = tmp_path / "cleaned.csv"
+    cleaned_data = preprocess_data(churn_data, cleaned_file)
+
+    assert (cleaned_data["MonthlyCharges"] >= 0).all()
+    assert (cleaned_data["TotalCharges"].dropna() >= 0).all()
