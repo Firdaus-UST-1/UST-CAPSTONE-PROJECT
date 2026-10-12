@@ -49,23 +49,35 @@ When you run `main.py`, the project:
 1. Reads the raw CSV and leaves it unchanged.
 2. Converts `TotalCharges` to numbers. The 11 blank values become missing and stay blank because the model does not use this column. A blank is allowed only when tenure is zero. Converts `Churn` to `1` for Yes and `0` for No. Keeps `customerID` for the results, not as a model input.
 3. Checks required columns, missing values, duplicate IDs, tenure, charges, and churn labels. Invalid data stops before training.
-4. Splits the data into 80% for training and 20% for testing, using `random_state=10` and keeping the churn proportions similar in both groups (`stratify=Churn`).
+4. Splits the data into 80% for training and 20% for testing, keeping the churn proportions similar in both groups.
 5. Trains a Logistic Regression model (`max_iter=1000`) using 18 customer and service fields. Category answers are converted to yes/no indicators, and number fields are put on a similar scale. The model does not use `Churn`, `customerID`, or `TotalCharges` as inputs.
 6. Tests predictions on 1,409 customers held aside from training.
 7. Saves results in `output/predictions.csv`, including customer ID, actual churn, predicted churn, and estimated churn probability.
 
 The 18 model inputs are `SeniorCitizen`, `tenure`, `MonthlyCharges`, `gender`, `Partner`, `Dependents`, `PhoneService`, `MultipleLines`, `InternetService`, `OnlineSecurity`, `OnlineBackup`, `DeviceProtection`, `TechSupport`, `StreamingTV`, `StreamingMovies`, `Contract`, `PaperlessBilling`, and `PaymentMethod`.
 
+## Split Settings
+
+Split settings used for the results:
+
+| Setting | Value |
+| --- | --- |
+| Function | `train_test_split` |
+| Training / test split | 80% / 20% |
+| `test_size` | `0.2` |
+| `random_state` | `10` |
+| `stratify` | `target` (integer-encoded `Churn`) |
+
 ## Results
 
-Results from the included dataset and split settings:
+Results from the included dataset:
 
-| Measure   |  Score | Meaning                                     |
-| --------- | -----: | ------------------------------------------- |
-| Accuracy  | 0.7892 | How often the model was correct             |
+| Measure | Score | Meaning |
+| --- | ---: | --- |
+| Accuracy | 0.7892 | How often the model was correct |
 | Precision | 0.6215 | How often a predicted churner actually left |
-| Recall    | 0.5267 | How many customers who left were found      |
-| F1 score  | 0.5702 | A combined precision and recall score       |
+| Recall | 0.5267 | How many customers who left were found |
+| F1 score | 0.5702 | A combined precision and recall score |
 
 ## Exploratory Analysis
 
@@ -89,6 +101,6 @@ The tests check that required columns are validated, raw `Churn` values are `Yes
 ## Limitations and Next Steps
 
 - `TotalCharges` is not used, and results come from one train/test split.
-- The dataset source and license still need to be recorded.
+- The current project only use Logistic Regression. Need to compare with other model for more accurate prediction.
 
 Possible next steps: add the dataset citation, test other models and prediction cutoffs, and add more pipeline tests.
