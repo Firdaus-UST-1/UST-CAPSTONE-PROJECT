@@ -38,8 +38,6 @@ UST Capstone/
 
 The input is `data/raw/Telco-Customer-Churn.csv`. It contains 7,043 customers and 21 columns about their accounts, services, bills, and churn. `Churn` is the outcome the model predicts.
 
-**Source and attribution:** The project files do not say who published the dataset or provide its download link or license. Add the correct source and attribution here before sharing the dataset; no source has been guessed.
-
 The original CSV is not changed. A cleaned copy is saved to `data/processed/Telco-Customer-Churn-cleaned.csv`.
 
 ## How the Project Works
@@ -60,24 +58,24 @@ The 18 model inputs are `SeniorCitizen`, `tenure`, `MonthlyCharges`, `gender`, `
 
 Split settings used for the results:
 
-| Setting | Value |
-| --- | --- |
-| Function | `train_test_split` |
-| Training / test split | 80% / 20% |
-| `test_size` | `0.2` |
-| `random_state` | `10` |
-| `stratify` | `target` (integer-encoded `Churn`) |
+| Setting               | Value                                  |
+| --------------------- | -------------------------------------- |
+| Function              | `train_test_split`                   |
+| Training / test split | 80% / 20%                              |
+| `test_size`         | `0.2`                                |
+| `random_state`      | `10`                                 |
+| `stratify`          | `target` (integer-encoded `Churn`) |
 
 ## Results
 
 Results from the included dataset:
 
-| Measure | Score | Meaning |
-| --- | ---: | --- |
-| Accuracy | 0.7892 | How often the model was correct |
+| Measure   |  Score | Meaning                                     |
+| --------- | -----: | ------------------------------------------- |
+| Accuracy  | 0.7892 | How often the model was correct             |
 | Precision | 0.6215 | How often a predicted churner actually left |
-| Recall | 0.5267 | How many customers who left were found |
-| F1 score | 0.5702 | A combined precision and recall score |
+| Recall    | 0.5267 | How many customers who left were found      |
+| F1 score  | 0.5702 | A combined precision and recall score       |
 
 ## Exploratory Analysis
 
