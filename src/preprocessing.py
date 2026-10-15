@@ -14,7 +14,7 @@ def preprocess_data(data: pd.DataFrame, output_path: str | Path) -> pd.DataFrame
     if duplicate_customer_ids:
         print(f"Duplicated customerID values: {duplicate_customer_ids}")
     else:
-        print("no duplicated Customer ID found")
+        print("No duplicated Customer ID found")
 
     total_charges_text = processed_data["TotalCharges"].fillna("").astype(str).str.strip()
     total_charges = pd.to_numeric(total_charges_text, errors="coerce")
