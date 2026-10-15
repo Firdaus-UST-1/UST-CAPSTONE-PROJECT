@@ -6,6 +6,16 @@ import pandas as pd
 def preprocess_data(data: pd.DataFrame, output_path: str | Path) -> pd.DataFrame:
     # Clean raw CSV fields and save the processed data.
     processed_data = data.copy()
+    duplicate_customer_ids = (
+        processed_data.loc[processed_data["customerID"].duplicated(keep=False), "customerID"]
+        .drop_duplicates()
+        .tolist()
+    )
+    if duplicate_customer_ids:
+        print(f"Duplicated customerID values: {duplicate_customer_ids}")
+    else:
+        print("no duplicated Customer ID found")
+
     total_charges_text = processed_data["TotalCharges"].fillna("").astype(str).str.strip()
     total_charges = pd.to_numeric(total_charges_text, errors="coerce")
     missing_charges = total_charges.isna()
