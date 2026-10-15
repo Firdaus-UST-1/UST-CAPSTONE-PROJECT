@@ -41,6 +41,24 @@ def test_duplicate_customer_ids_are_detected():
         validate_data(data_with_duplicate)
 
 
+def test_preprocessing_reports_duplicate_customer_ids(tmp_path, capsys):
+    churn_data = load_raw_data()
+    first_customer_id = churn_data.loc[0, "customerID"]
+    churn_data.loc[1, "customerID"] = first_customer_id
+
+    cleaned_data = preprocess_data(churn_data, tmp_path / "cleaned.csv")
+
+    assert cleaned_data.loc[0, "customerID"] == first_customer_id
+    assert f"Duplicated customerID values: ['{first_customer_id}']" in capsys.readouterr().out
+
+
+def test_preprocessing_reports_when_customer_ids_are_unique(tmp_path, capsys):
+    cleaned_data = preprocess_data(load_raw_data(), tmp_path / "cleaned.csv")
+
+    assert not cleaned_data["customerID"].duplicated().any()
+    assert "No duplicated Customer ID found" in capsys.readouterr().out
+
+
 def test_total_charges_are_numeric_after_cleaning(tmp_path):
     churn_data = load_raw_data()
     # pytest creates tmp_path as a temporary folder for this test.
